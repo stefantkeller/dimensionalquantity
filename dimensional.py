@@ -45,6 +45,9 @@ class Dimensional(dict):
     def __sub__(self, other):
         return Dimensional({key:self[key]-other[key] for key in set(self.keys()).union(other.keys())})
     
+    @compatible_with_operation('-')
+    def __rsub__(self, other):
+        return Dimensional({key:other[key]-self[key] for key in set(self.keys()).union(other.keys())})
         
 
 
