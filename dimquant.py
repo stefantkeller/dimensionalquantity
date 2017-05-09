@@ -58,10 +58,11 @@ class DimQuant(object):
 
     @compatible_with_linear_operation('-')
     def __sub__(self, other):
-        pass
-    @compatible_with_linear_operation('-')
-    def __rsub__(self, other):
-        pass
+        return DimQuant(numeric = self.numeric-other.numeric,\
+                        dimensions = D(self.dimensions))
+    #@compatible_with_linear_operation('-')
+    #def __rsub__(self, other):
+    #    return -self.__sub__(other)
 
     def __mul__(self, other):
         pass
