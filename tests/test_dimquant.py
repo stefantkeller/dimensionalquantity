@@ -60,3 +60,30 @@ def test_add_create_new_instances():
 
     assert(id(q0)!=id(q2) and id(q1)!=id(q2))
 
+def test_add_create_new_instance_dimensions():
+    q0 = DQ(dimensions=D({'a':-1}))
+    q1 = DQ(dimensions=D({'a':-1}))
+    q2 = q0+q1
+
+    assert(q0.dimensions == q2.dimensions \
+            and q1.dimensions == q2.dimensions)
+
+    assert(id(q0.dimensions)!=id(q2.dimensions) \
+            and id(q1.dimensions)!=id(q2.dimensions))
+
+def test_add_basics():
+    q0 = DQ(1, D({'a':1, 'b':0, 'c':0}))
+    q1 = DQ(2, D({'a':1, 'b':0, 'c':0}))
+    q2_exp = DQ(3, D({'a':1, 'b':0, 'c':0}))
+
+    q2_real = q0 + q1
+
+    assert(q2_exp.numeric == q2_real.numeric)
+    assert(q2_exp.dimensions == q2_real.dimensions)
+
+def test_eq():
+    q0 = DQ(1, D({'a':1, 'b':0, 'c':0}))
+    q1 = DQ(1, D({'a':1, 'b':0, 'c':0}))
+
+    assert(q0 == q1)
+

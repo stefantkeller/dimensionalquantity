@@ -6,8 +6,8 @@
 # ii.  make behavior more intuitive (Dimensional looks like a dict,
 #      so it should at least run silently for dicts),
 # iii. report sensible error messages
-def compatible_with_operation(operand='<undefined>'):
-    def decorate_specified_operand(method):
+def compatible_with_operation(operation='<undefined>'):
+    def decorate_specified_operation(method):
         def decorated(self, other, **kwargs):
             try:
                 return method(self, other)
@@ -23,11 +23,11 @@ def compatible_with_operation(operand='<undefined>'):
                 if isinstance(other, dict):
                     return method(self, Dimensional(other))
                 else:
-                    raise TypeError('unsupported operand type(s) for {}:'.format(operand)
-                                    + ' \'{}\' and \'{}\''.format(type(self).__name__,
-                                                                  type(other).__name__))
+                    raise TypeError(''.join(['unsupported operand type(s) for {}:'.format(operation),
+                                             ' \'{}\' and \'{}\''.format(type(self).__name__,
+                                                                         type(other).__name__)]))
         return decorated
-    return decorate_specified_operand
+    return decorate_specified_operation
 
 class Dimensional(dict):
     def __getitem__(self, key):
