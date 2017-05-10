@@ -1,2 +1,6 @@
 .pyc
 __pycache__
+tests/.cache/
+tests/.coverage
+tests/htmlcov/
+
