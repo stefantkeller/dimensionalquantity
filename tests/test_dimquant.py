@@ -87,6 +87,11 @@ def test_eq():
 
     assert(q0 == q1)
 
+def test_eq_fail_type():
+    q0 = DQ(1)
+
+    assert( not (q0 == 1) )
+
 def test_sub_wrong_dimensions():
     q0 = DQ(1,{'a':2})
     q1 = DQ(1,{'a':1})
@@ -130,4 +135,45 @@ def test_sub_basics():
 
     assert(q2_exp.numeric == q2_real.numeric)
     assert(q2_exp.dimensions == q2_real.dimensions)
+
+
+def test_mul_create_new_instances():
+    q0 = DQ()
+    q1 = DQ()
+    q2 = q0*q1
+
+    assert(id(q0)!=id(q2) and id(q1)!=id(q2))
+
+def test_mul_create_new_instance_dimensions():
+    q0 = DQ(2, dimensions=D({'a':-1}))
+    q1 = DQ(3, dimensions=D({'a':-1}))
+    q2_exp = DQ(6, D({'a':-2}))
+    q2_real = q0*q1
+
+    assert(q2_exp.dimensions == q2_real.dimensions)
+
+    assert(id(q0.dimensions)!=id(q2_real.dimensions) \
+            and id(q1.dimensions)!=id(q2_real.dimensions))
+
+def test_mul_basics():
+    q0 = DQ(2, D({'a':1, 'b':-1}))
+    q1 = DQ(3, D({'b':1, 'c':1}))
+    q2 = DQ(5, D({'c':2}))
+    q01_exp = DQ(6, D({'a':1, 'b':0, 'c':1}))
+    q02_exp = DQ(10, D({'a':1, 'b':-1, 'c':2}))
+
+    q01_real = q0 * q1
+    q02_real = q0 * q2
+
+    assert(q01_exp.numeric == q01_real.numeric)
+    assert(q01_exp.dimensions == q01_real.dimensions)
+    assert(q02_exp.numeric == q02_real.numeric)
+    assert(q02_exp.dimensions == q02_real.dimensions)
+
+def test_mul_other_types():
+    q0 = DQ(1)
+    q1 = q0*2
+    q1_ = 2*q0
+    assert( q1==q1_ )
+    assert( q1.numeric==2 )
 

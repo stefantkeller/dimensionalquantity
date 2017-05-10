@@ -52,14 +52,20 @@ class DimQuant(object):
     def __add__(self, other):
         return DimQuant(numeric = self.numeric+other.numeric,\
                         dimensions = D(self.dimensions))
-    @compatible_with_linear_operation('+')
-    def __radd__(self, other):
-        self.__add__(other)
+    # the __radd__ isn't actually necessary
+    # because the compatible_with_linear_operation decorator
+    # anyway only accepts other's of DimQuant type
+    # hence, the only time __radd__ would come into play would be
+    # to throw a TypeError; which we can easily leave for other to throw.
+    #@compatible_with_linear_operation('+')
+    #def __radd__(self, other):
+    #    self.__add__(other)
 
     @compatible_with_linear_operation('-')
     def __sub__(self, other):
         return DimQuant(numeric = self.numeric-other.numeric,\
                         dimensions = D(self.dimensions))
+    # not implementing __rsub__ for same reason as __radd__
     #@compatible_with_linear_operation('-')
     #def __rsub__(self, other):
     #    return -self.__sub__(other)
