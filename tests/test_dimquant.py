@@ -247,3 +247,61 @@ def test_div_other_incompat_types():
         q1 = (1,2)/q0
     with pytest.raises(TypeError):
         q1 = q0/{'a':1}
+
+
+def test_pow_create_new_instances():
+    q0 = DQ(1)
+    q1 = q0**2
+
+    assert(id(q0)!=id(q1))
+
+def test_pow_create_new_instance_dimensions():
+    q0 = DQ(1, dimensions=D({'a':-1}))
+    q1_exp = DQ(1, D({'a':-2}))
+    q1_real = q0**2
+
+    assert(q1_exp.dimensions == q1_real.dimensions)
+    assert(id(q0.dimensions)!=id(q1_real.dimensions))
+
+def test_pow_basics():
+    q = DQ(2, D({'a':1, 'b':-1}))
+    q2_exp = DQ(4, D({'a':2, 'b':-2}))
+    q05_exp = DQ(2**0.5, D({'a':1/2, 'b':-1/2}))
+
+    q2_real = q**2
+    q05_real = q**0.5
+
+    assert(q2_exp.numeric == q2_real.numeric)
+    assert(q2_exp.dimensions == q2_real.dimensions)
+    assert(q05_exp.numeric == q05_real.numeric)
+    assert(q05_exp.dimensions == q05_real.dimensions)
+
+def test_rpow_basics():
+    q = DQ(2, D({'a':1, 'b':-1}))
+    # each dimension declared in q.dimensions has to be 0 in order for pow to make sense
+    with pytest.raises(NotImplementedError):
+        q_ = 2**q
+
+    q1 = DQ(1, D({'a':1, 'b':-1}))
+    q2 = q/q1
+    dim_null = D({'a':0, 'b':0})
+    assert( q2.dimensions==dim_null)
+
+    base_int = 2
+    value0 = base_int**q2
+    assert( value0==4 )
+    assert( isinstance(value0,int) )
+
+    base_float = 3.0
+    value0 = base_float**q2
+    assert( value0==9 )
+    assert( isinstance(value0,float) )
+
+def test_pow_other_incompat_types():
+    q0 = DQ(1)
+    with pytest.raises(TypeError):
+        q1 = q0**[1]
+    with pytest.raises(TypeError):
+        q1 = (1,2)**q0
+    with pytest.raises(TypeError):
+        q1 = q0**{'a':1}
