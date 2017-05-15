@@ -49,5 +49,13 @@ class Dimensional(dict):
     def __rsub__(self, other):
         return Dimensional({key:other[key]-self[key] for key in set(self.keys()).union(other.keys())})
         
-
+    def __mul__(self, other):
+        if isinstance(other, (int, float, complex)):
+            return Dimensional({key:other*value for key, value in self.items()})
+        else:
+            raise TypeError(''.join(['unsupported operand type(s) for /:',
+                                     ' \'{}\' and \'{}\''.format(type(self).__name__,
+                                                                 type(other).__name__)]))
+    def __rmul__(self, other):
+        return self*other
 

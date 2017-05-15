@@ -81,6 +81,15 @@ def test_mul():
     with pytest.raises(TypeError):
         q2 = q0 * q1
 
+def test_mul_numeric():
+    # __mul__ does make sense if the other is a number
+    q0 = D({'a':1, 'b':0, 'c':0})
+    q1 = -1*q0
+    q0_ = D({'a':-1, 'b':0, 'c':0})
+    assert( q1==q0_ )
+    q2 = 2*q0
+    assert( q2['a']==2 )
+
 def test_div():
     # __div__ doesn't make sense hence it isn't implemented
     q0 = D({'a':1, 'b':0, 'c':0})

@@ -71,14 +71,27 @@ class DimQuant(object):
     #    return -self.__sub__(other)
 
     def __mul__(self, other):
-        pass
+        if isinstance(other, DimQuant):
+            return DimQuant(numeric = self.numeric*other.numeric,\
+                            dimensions = self.dimensions+other.dimensions)
+        else:
+            return DimQuant(numeric = self.numeric*other,\
+                            dimensions = D(self.dimensions))
     def __rmul__(self, other):
-        pass
+        return self*other
 
-    def __div__(self, other):
-        pass
-    def __rdiv__(self, other):
-        pass
+    def __truediv__(self, other):
+        if isinstance(other, DimQuant): 
+            return DimQuant(numeric = self.numeric/other.numeric,\
+                            dimensions = self.dimensions-other.dimensions)
+        else:
+            return DimQuant(numeric = self.numeric/other,\
+                            dimensions = D(self.dimensions))
+
+    def __rtruediv__(self, other):
+        # if isinstance(other, DimQuant): this case is covered by __truediv__
+        return DimQuant(numeric = other/self.numeric,\
+                        dimensions = -1*D(self.dimensions))
 
     def __pow__(self, other):
         pass
