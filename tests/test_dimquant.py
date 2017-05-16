@@ -276,6 +276,11 @@ def test_pow_basics():
     assert(q05_exp.numeric == q05_real.numeric)
     assert(q05_exp.dimensions == q05_real.dimensions)
 
+    q1 = DQ(2)
+    q2_alt = q**q1
+
+    assert(q2_alt == q2_exp)
+
 def test_rpow_basics():
     q = DQ(2, D({'a':1, 'b':-1}))
     # each dimension declared in q.dimensions has to be 0 in order for pow to make sense
@@ -287,15 +292,9 @@ def test_rpow_basics():
     dim_null = D({'a':0, 'b':0})
     assert( q2.dimensions==dim_null)
 
-    base_int = 2
-    value0 = base_int**q2
-    assert( value0==4 )
-    assert( isinstance(value0,int) )
-
-    base_float = 3.0
-    value0 = base_float**q2
-    assert( value0==9 )
-    assert( isinstance(value0,float) )
+    base = 2
+    value = base**q2
+    assert( value==4 )
 
 def test_pow_other_incompat_types():
     q0 = DQ(1)

@@ -93,11 +93,23 @@ class DimQuant(object):
         return DimQuant(numeric = other/self.numeric,\
                         dimensions = -1*D(self.dimensions))
 
+    # __pow__ makes sense only if the exponent is either not an instance of DimQuant
+    # or if all entries of DimQuant.dimensions are 0
     def __pow__(self, other):
-        pass
+        if not isinstance(other, DimQuant):
+            return DimQuant(numeric = self.numeric**other,\
+                            dimensions = self.dimensions*other)
+        else:
+            if any(other.dimensions.values()):
+                raise NotImplementedError(' '.join(['The exponent cannot be a dimensional quantity,',\
+                                                    'it has to be a purely numerical value!']))
+            else:
+                if any(self.dimensions.values()):
+                    return self**other.numeric
+                else:
+                    return self.numeric**other.numeric
     def __rpow__(self, other):
-        raise NotImplementedError(' '.join(['The exponent cannot be a dimensional quantity,',\
-                                            'it has to be a purely numerical value!']))
+        return DimQuant(other)**self
 
     def __eq__(self, other):
         if not isinstance(other, DimQuant):
