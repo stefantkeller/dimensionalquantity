@@ -19,7 +19,6 @@ def compatible_with_linear_operation(operation='<undefined>'):
         return decorated
     return decorate_specified_operation
 
-
 class DimQuant(object):
     def __init__(self, numeric=0, dimensions=D({})):
         self.numeric=numeric
@@ -100,14 +99,14 @@ class DimQuant(object):
             return DimQuant(numeric = self.numeric**other,\
                             dimensions = self.dimensions*other)
         else:
-            if any(other.dimensions.values()):
+            if not other.is_non_dimensional():
                 raise NotImplementedError(' '.join(['The exponent cannot be a dimensional quantity,',\
                                                     'it has to be a purely numerical value!']))
             else:
-                if any(self.dimensions.values()):
-                    return self**other.numeric
-                else:
+                if self.is_non_dimensional():
                     return self.numeric**other.numeric
+                else:
+                    return self**other.numeric
     def __rpow__(self, other):
         return DimQuant(other)**self
 
@@ -117,3 +116,6 @@ class DimQuant(object):
         else:
             return (self.numeric == other.numeric \
                     and self.dimensions == other.dimensions)
+
+    def is_non_dimensional(self):
+        return ( (len(self.dimensions)==0) or not any(self.dimensions.values()) )

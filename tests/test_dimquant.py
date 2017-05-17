@@ -304,3 +304,12 @@ def test_pow_other_incompat_types():
         q1 = (1,2)**q0
     with pytest.raises(TypeError):
         q1 = q0**{'a':1}
+
+def test_non_dimensional():
+    q0 = DQ()
+    assert( q0.is_non_dimensional() )
+    assert( DQ.is_non_dimensional(q0) )
+    q1 = DQ(1, {'a':0, 'b':0})
+    assert( q1.is_non_dimensional() )
+    q2 = DQ(1, {'a':1, 'b':0})
+    assert( not q2.is_non_dimensional() )
