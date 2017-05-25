@@ -19,6 +19,30 @@ def compatible_with_linear_operation(operation='<undefined>'):
         return decorated
     return decorate_specified_operation
 
+def compatible_with_comparison(comparison_name='<undefined>'):
+    def comparison(compare):
+        def decorated(self, other, **kwargs):
+            if not isinstance(other, DimQuant):
+                if self.is_non_dimensional():
+                    # how to access (e.g.) self.numeric.__eq__(other)?
+                    # 'return self.numeric.compare(other)' doesn't work
+                    # because 'self.numeric' doesn't have a method called 'compare'
+                    # this hack works, but looks ugly:
+                    return eval('self.numeric.{}(other)'.format(compare.__name__))
+                else:
+                    raise TypeError(' '.join(['\'{}\' not supported'.format(comparison_name),
+                                              'between instances of',
+                                              '\'{}\' and \'{}\''.format(type(self).__name__,
+                                                                         type(other).__name__)]))
+            else:
+                if (self.dimensions!=other.dimensions):
+                    raise NotImplementedError(' '.join(['Comparison \'{}\' is not defined'.format(comparison_name),
+                                                        'for dimensional quantities of different dimension!']))
+                else:
+                    return compare(self, other)
+        return decorated
+    return comparison
+
 class DimQuant(object):
     def __init__(self, numeric=0, dimensions=D({})):
         self.numeric=numeric
@@ -40,9 +64,7 @@ class DimQuant(object):
         return self.__dimensions
     @dimensions.setter
     def dimensions(self, dims):
-        if isinstance(dims, D):
-            self.__dimensions = dims
-        elif isinstance(dims, dict):
+        if isinstance(dims, (D, dict)):
             self.__dimensions = D(dims)
         else:
             raise TypeError('Dimensions aren\'t of type \'Dimensional\' but of \'{}\' instead.'.format(type(dims).__name__))
@@ -110,12 +132,17 @@ class DimQuant(object):
     def __rpow__(self, other):
         return DimQuant(other)**self
 
+    @compatible_with_comparison('==')
     def __eq__(self, other):
-        if not isinstance(other, DimQuant):
-            return False
-        else:
-            return (self.numeric == other.numeric \
-                    and self.dimensions == other.dimensions)
+        return (self.numeric == other.numeric)
+
+    @compatible_with_comparison('>')
+    def __gt__(self, other):
+        return (self.numeric > other.numeric)
+
+    @compatible_with_comparison('<')
+    def __lt__(self, other):
+        return (self.numeric < other.numeric)
 
     def is_non_dimensional(self):
         return ( (len(self.dimensions)==0) or not any(self.dimensions.values()) )
