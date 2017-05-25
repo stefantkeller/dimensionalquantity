@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from . dimensional import Dimensional as D
+from . import Dimensional as D
 
 # like compatible_with_operation() for Dimensional but expl. only for __add__ and __sub__
 def compatible_with_linear_operation(operation='<undefined>'):
