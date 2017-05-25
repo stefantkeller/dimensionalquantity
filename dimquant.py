@@ -134,15 +134,26 @@ class DimQuant(object):
 
     @compatible_with_comparison('==')
     def __eq__(self, other):
+        """according to https://docs.python.org/3/reference/datamodel.html
+        __eq__ directly also takes care of __neq__
+        """
         return (self.numeric == other.numeric)
 
     @compatible_with_comparison('>')
     def __gt__(self, other):
         return (self.numeric > other.numeric)
 
+    @compatible_with_comparison('>=')
+    def __ge__(self, other):
+        return (self.numeric >= other.numeric)
+
     @compatible_with_comparison('<')
     def __lt__(self, other):
         return (self.numeric < other.numeric)
+
+    @compatible_with_comparison('<=')
+    def __le__(self, other):
+        return (self.numeric <= other.numeric)
 
     def is_non_dimensional(self):
         return ( (len(self.dimensions)==0) or not any(self.dimensions.values()) )
