@@ -37,6 +37,12 @@ def test_dimensions_settings():
     with pytest.raises(TypeError):
         test = DQ(dimensions=[1,2])
 
+def test_dimensions_settings_new_id():
+    q0 = DQ()
+    d0 = D({'a':1})
+    q0.dimensions = d0
+    assert( id(q0.dimensions)!=id(d0) )
+
 def test_add_wrong_dimensions():
     q0 = DQ(1,{'a':2})
     q1 = DQ(1,{'a':1})
@@ -80,17 +86,6 @@ def test_add_basics():
 
     assert(q2_exp.numeric == q2_real.numeric)
     assert(q2_exp.dimensions == q2_real.dimensions)
-
-def test_eq():
-    q0 = DQ(1, D({'a':1, 'b':0, 'c':0}))
-    q1 = DQ(1, D({'a':1, 'b':0, 'c':0}))
-
-    assert(q0 == q1)
-
-def test_eq_fail_type():
-    q0 = DQ(1)
-
-    assert( not (q0 == 1) )
 
 def test_sub_wrong_dimensions():
     q0 = DQ(1,{'a':2})
