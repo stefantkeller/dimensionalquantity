@@ -1,11 +1,14 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from functools import wraps
+
 from . import Dimensional as D
 
 # like compatible_with_operation() for Dimensional but expl. only for __add__ and __sub__
 def compatible_with_linear_operation(operation='<undefined>'):
     def decorate_specified_operation(method):
+        @wraps(method)
         def decorated(self, other, **kwargs):
             if not isinstance(other, DimQuant):
                 raise TypeError(''.join(['unsupported operand type(s) for {}:'.format(operation),
@@ -21,6 +24,7 @@ def compatible_with_linear_operation(operation='<undefined>'):
 
 def compatible_with_comparison(comparison_name='<undefined>'):
     def comparison(compare):
+        @wraps(compare)
         def decorated(self, other, **kwargs):
             if not isinstance(other, DimQuant):
                 if self.is_non_dimensional():

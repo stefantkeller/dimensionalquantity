@@ -308,3 +308,18 @@ def test_non_dimensional():
     assert( q1.is_non_dimensional() )
     q2 = DQ(1, {'a':1, 'b':0})
     assert( not q2.is_non_dimensional() )
+
+def test_decorator_wrapping_linop():
+    q0 = DQ()
+
+    assert( q0.__add__.__name__ == '__add__' )
+    assert( q0.__sub__.__name__ == '__sub__' )
+
+def test_decorator_wrapping_cmp():
+    q0 = DQ()
+
+    assert( q0.__eq__.__name__ == '__eq__' )
+    assert( q0.__gt__.__name__ == '__gt__' )
+    assert( q0.__ge__.__name__ == '__ge__' )
+    assert( q0.__lt__.__name__ == '__lt__' )
+    assert( q0.__le__.__name__ == '__le__' )
