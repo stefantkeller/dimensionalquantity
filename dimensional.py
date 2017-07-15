@@ -1,6 +1,8 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+from functools import wraps
+
 # wrapper for Dimensional operations (such as __add__, __sub__) to
 # i.   make code more readable by putting reoccuring stuff here,
 # ii.  make behavior more intuitive (Dimensional looks like a dict,
@@ -8,6 +10,7 @@
 # iii. report sensible error messages
 def compatible_with_operation(operation='<undefined>'):
     def decorate_specified_operation(method):
+        @wraps(method)
         def decorated(self, other, **kwargs):
             try:
                 return method(self, other)

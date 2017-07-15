@@ -96,3 +96,15 @@ def test_div():
     q1 = D({'a':0, 'b':1, 'd':0})
     with pytest.raises(TypeError):
         q2 = q0 / q1
+
+def test_decorator_wrapping():
+    q0 = D({'a':1, 'b':0, 'c':0})
+
+    assert( q0.__add__.__name__ == '__add__' )
+    assert( q0.__sub__.__name__ == '__sub__' )
+    assert( q0.__mul__.__name__ == '__mul__' )
+
+    assert( q0.__radd__.__name__ == '__radd__' )
+    assert( q0.__rsub__.__name__ == '__rsub__' )
+    assert( q0.__rmul__.__name__ == '__rmul__' )
+
