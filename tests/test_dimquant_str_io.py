@@ -6,7 +6,7 @@ from collections import OrderedDict
 import pytest
 
 from dimensionalquantity import Dimensional as D
-from dimensionalquantity import TDimQuant as DQ
+from dimensionalquantity import DimQuant as DQ
 
 def test_dimquant_with_str_init():
     q0 = DQ('1 m')

@@ -5,7 +5,7 @@ import re # https://docs.python.org/3/library/re.html#writing-a-tokenizer
 from collections import namedtuple
 
 from . import Dimensional as D
-from . import DimQuant as DQ
+from . import BaseDimQuant as DQ
 
 
 # https://docs.python.org/3/library/re.html#writing-a-tokenizer
