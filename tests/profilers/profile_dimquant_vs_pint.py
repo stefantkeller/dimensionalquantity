@@ -25,9 +25,11 @@ from dimensionalquantity import DimQuant as DQ
 def multiplying_Q_many_times():
     dq_1m = DQ(1, D({'L':1}))
     pint_1m = 1*ureg.meter
+    normal_int = 1
     for i in range(1000):
         dq_1m *= dq_1m
         pint_1m *= pint_1m
+        normal_int *= normal_int
 
 @profile
 def create_many_instances():
@@ -36,6 +38,9 @@ def create_many_instances():
     for j in range(bigN): pint_kg = Q_('{} kg'.format(j))
     for j in range(bigN): dq_m = DQ('{} m'.format(j))
     for j in range(bigN): dq_kg = DQ('{} kg'.format(j))
+    for j in range(bigN): normal_int = int(j)
+    for j in range(bigN): normal_string = '{} m'.format(j)
+    for j in range(bigN): normal_dict = dict(j=j)
 
 if __name__=="__main__":
     multiplying_Q_many_times()
