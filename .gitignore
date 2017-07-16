@@ -1,6 +1,8 @@
 .pyc
 __pycache__
-tests/.cache/
-tests/.coverage
+*.cache/
+*.coverage
 tests/htmlcov/
-
+sandbox.ipynb
+.ipynb_checkpoints/
+tests/profilers/*.lprof
