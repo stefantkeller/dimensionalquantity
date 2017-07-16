@@ -126,11 +126,11 @@ class BasicTranslator(object):
             prefix = unit_value[0]
             unit_value = unit_value[1:]
             if unit_value not in self._unit_LUT.keys(): 
-                raise KeyError(' '.join(['{} doesn\'t recognize'.format(self.__name__),
+                raise KeyError(' '.join(['{} doesn\'t recognize'.format(type(self).__name__),
                                          'symbol {}'.format(unit_value),
                                          'and can thus not translate it into a DimQuant.']))
             if prefix not in self._prefix_LUT.keys():
-                raise KeyError(' '.join(['{} doesn\'t recognize'.format(self.__name__),
+                raise KeyError(' '.join(['{} doesn\'t recognize'.format(type(self).__name__),
                                          'prefix \'{}\''.format(prefix),
                                          'of unit \'{}\'.'.format(unit_value)]))
             return self._unit_LUT[unit_value]*self._prefix_LUT[prefix]

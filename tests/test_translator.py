@@ -55,3 +55,40 @@ def test_translating_complex_strings():
     res = T.translate(string).dimensions
     _D = D({'M': 2.0, 't': 2.0, 'L': -9.0, 'T': 3.0, 'i': 2.0})
     assert( res==_D )
+
+def test_unknown_unit_prefix_raises_KeyError():
+    translator = Translator()
+    with pytest.raises(KeyError):
+        translator.translate('wm') # while 'm' exists as SI unit, the 'w' prefix doesn't and thus this error
+    with pytest.raises(ValueError):
+        translator.translate('w') # this unit doesn't exist in the SI base units (also not in extended because lower case)
+
+
+
+@pytest.fixture(scope="function")
+def setup_and_clean_DQ_with_basic_Translator():
+    _t = Translator()
+    DQ.register_translator(_t)
+    yield
+    # teardown: reset original Translator() as the translator used in DQ
+    DQ.register_translator(_t)
+
+def test_register_unit_LUT(setup_and_clean_DQ_with_basic_Translator):
+    with pytest.raises(KeyError):
+        q_fanta = DQ('1 fanta') # this unit doesn't exist hence the KeyError
+
+    fantasy_unit_LUT = {'fanta': DQ('2.54 cm')}
+    translator = Translator()
+    translator.register_unit_LUT(fantasy_unit_LUT)
+    DQ.register_translator(translator)
+
+    q_si = 2*DQ('2.54 cm')
+    q_fanta = DQ('2 fanta') # now it does exist
+    assert( q_si==q_fanta )
+
+def test_fantasy_unit_raises_KeyError():
+    # this test has to be called after test_register_unit_LUT()
+    # to ensure DQ doesn't suddenly come with weird LUTs preregistered
+    # in other words, this is supposed to test whether the teardown was executed correctly
+    with pytest.raises(KeyError):
+        q_fanta = DQ('1 fanta') # this unit doesn't exist hence the KeyError
