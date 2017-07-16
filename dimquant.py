@@ -10,7 +10,7 @@ def compatible_with_linear_operation(operation='<undefined>'):
     def decorate_specified_operation(method):
         @wraps(method)
         def decorated(self, other, **kwargs):
-            if not isinstance(other, DimQuant):
+            if not isinstance(other, BaseDimQuant):
                 raise TypeError(''.join(['unsupported operand type(s) for {}:'.format(operation),
                                          ' \'{}\' and \'{}\''.format(type(self).__name__,
                                                                      type(other).__name__)]))
@@ -26,7 +26,7 @@ def compatible_with_comparison(comparison_name='<undefined>'):
     def comparison(compare):
         @wraps(compare)
         def decorated(self, other, **kwargs):
-            if not isinstance(other, DimQuant):
+            if not isinstance(other, BaseDimQuant):
                 if self.is_non_dimensional():
                     # how to access (e.g.) self.numeric.__eq__(other)?
                     # 'return self.numeric.compare(other)' doesn't work
@@ -47,7 +47,7 @@ def compatible_with_comparison(comparison_name='<undefined>'):
         return decorated
     return comparison
 
-class DimQuant(object):
+class BaseDimQuant(object):
     def __init__(self, numeric=0, dimensions=D({})):
         self.numeric=numeric
         self.dimensions=dimensions
@@ -75,11 +75,11 @@ class DimQuant(object):
     
     @compatible_with_linear_operation('+')
     def __add__(self, other):
-        return DimQuant(numeric = self.numeric+other.numeric,\
+        return BaseDimQuant(numeric = self.numeric+other.numeric,\
                         dimensions = D(self.dimensions))
     # the __radd__ isn't actually necessary
     # because the compatible_with_linear_operation decorator
-    # anyway only accepts other's of DimQuant type
+    # anyway only accepts other's of BaseDimQuant type
     # hence, the only time __radd__ would come into play would be
     # to throw a TypeError; which we can easily leave for other to throw.
     #@compatible_with_linear_operation('+')
@@ -88,7 +88,7 @@ class DimQuant(object):
 
     @compatible_with_linear_operation('-')
     def __sub__(self, other):
-        return DimQuant(numeric = self.numeric-other.numeric,\
+        return BaseDimQuant(numeric = self.numeric-other.numeric,\
                         dimensions = D(self.dimensions))
     # not implementing __rsub__ for same reason as __radd__
     #@compatible_with_linear_operation('-')
@@ -96,33 +96,33 @@ class DimQuant(object):
     #    return -self.__sub__(other)
 
     def __mul__(self, other):
-        if isinstance(other, DimQuant):
-            return DimQuant(numeric = self.numeric*other.numeric,\
+        if isinstance(other, BaseDimQuant):
+            return BaseDimQuant(numeric = self.numeric*other.numeric,\
                             dimensions = self.dimensions+other.dimensions)
         else:
-            return DimQuant(numeric = self.numeric*other,\
+            return BaseDimQuant(numeric = self.numeric*other,\
                             dimensions = D(self.dimensions))
     def __rmul__(self, other):
         return self*other
 
     def __truediv__(self, other):
-        if isinstance(other, DimQuant): 
-            return DimQuant(numeric = self.numeric/other.numeric,\
+        if isinstance(other, BaseDimQuant): 
+            return BaseDimQuant(numeric = self.numeric/other.numeric,\
                             dimensions = self.dimensions-other.dimensions)
         else:
-            return DimQuant(numeric = self.numeric/other,\
+            return BaseDimQuant(numeric = self.numeric/other,\
                             dimensions = D(self.dimensions))
 
     def __rtruediv__(self, other):
-        # if isinstance(other, DimQuant): this case is covered by __truediv__
-        return DimQuant(numeric = other/self.numeric,\
+        # if isinstance(other, BaseDimQuant): this case is covered by __truediv__
+        return BaseDimQuant(numeric = other/self.numeric,\
                         dimensions = -1*D(self.dimensions))
 
-    # __pow__ makes sense only if the exponent is either not an instance of DimQuant
-    # or if all entries of DimQuant.dimensions are 0
+    # __pow__ makes sense only if the exponent is either not an instance of BaseDimQuant
+    # or if all entries of BaseDimQuant.dimensions are 0
     def __pow__(self, other):
-        if not isinstance(other, DimQuant):
-            return DimQuant(numeric = self.numeric**other,\
+        if not isinstance(other, BaseDimQuant):
+            return BaseDimQuant(numeric = self.numeric**other,\
                             dimensions = self.dimensions*other)
         else:
             if not other.is_non_dimensional():
@@ -134,7 +134,7 @@ class DimQuant(object):
                 else:
                     return self**other.numeric
     def __rpow__(self, other):
-        return DimQuant(other)**self
+        return BaseDimQuant(other)**self
 
     @compatible_with_comparison('==')
     def __eq__(self, other):
