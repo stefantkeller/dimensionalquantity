@@ -67,7 +67,7 @@ def test_unknown_unit_prefix_raises_KeyError():
 
 @pytest.fixture(scope="function")
 def setup_and_clean_DQ_with_basic_Translator():
-    _t = Translator()
+    _t = DQ._T
     DQ.register_translator(_t)
     yield
     # teardown: reset original Translator() as the translator used in DQ
@@ -86,9 +86,66 @@ def test_register_unit_LUT(setup_and_clean_DQ_with_basic_Translator):
     q_fanta = DQ('2 fanta') # now it does exist
     assert( q_si==q_fanta )
 
-def test_fantasy_unit_raises_KeyError():
-    # this test has to be called after test_register_unit_LUT()
-    # to ensure DQ doesn't suddenly come with weird LUTs preregistered
+def test_register_unit_LUT_overwrite(setup_and_clean_DQ_with_basic_Translator):
+    # the `setup_and_clean_DQ_with_basic_Translator` ensures
+    # DQ doesn't suddenly come with weird LUTs preregistered
+    # despite the following having been registered in a prev test;
     # in other words, this is supposed to test whether the teardown was executed correctly
     with pytest.raises(KeyError):
         q_fanta = DQ('1 fanta') # this unit doesn't exist hence the KeyError
+
+    pre_T = DQ._T
+    q_si_before_overwritten = 2*DQ('2.54 cm')
+
+    fantasy_unit_LUT = {'fanta': DQ('2.54 cm')}
+    translator = Translator()
+    translator.register_unit_LUT(fantasy_unit_LUT, overwrite=True)
+    DQ.register_translator(translator)
+
+    assert(id(pre_T) != DQ._T) # since overwritten
+
+    q_fanta = DQ('2 fanta') # now it does exist
+    assert( q_si_before_overwritten==q_fanta )
+
+    with pytest.raises(KeyError):
+        q_si_after_overwritten = DQ('2.54 cm') # no longer recognized because LUT is overwritten
+
+def test_register_prefix_LUT(setup_and_clean_DQ_with_basic_Translator):
+    with pytest.raises(KeyError):
+        q_fanta = DQ('1 qm') # `m` is known, but prefix `q` not
+    
+    fantasy_prefix_LUT = {'q': 3.14}
+    translator = Translator()
+    translator.register_prefix_LUT(fantasy_prefix_LUT)
+    DQ.register_translator(translator)
+
+    assert(DQ('1 qm') == DQ('314 cm')) # `c` prefix is still known
+
+def test_register_prefix_LUT_overwrite(setup_and_clean_DQ_with_basic_Translator):
+    with pytest.raises(KeyError):
+        q_fanta = DQ('1 qm') # `m` is known, but prefix `q` not
+    
+    q_before_overwrite = DQ('314 cm')
+
+    fantasy_prefix_LUT = {'q': 3.14}
+    translator = Translator()
+    translator.register_prefix_LUT(fantasy_prefix_LUT, overwrite=True)
+    DQ.register_translator(translator)
+
+    assert(DQ('1 qm') == q_before_overwrite)
+
+    with pytest.raises(KeyError):
+        q_after_overwrite = DQ('314 cm')
+
+def test_register_unit_LUT_with_already_existing(setup_and_clean_DQ_with_basic_Translator):
+    redundant_unit_LUT = {'m': DQ('100 cm')}
+    translator = Translator()
+    with pytest.raises(ValueError):
+        translator.register_unit_LUT(redundant_unit_LUT)
+
+def test_register_prefix_LUT_with_already_existing(setup_and_clean_DQ_with_basic_Translator):
+    redundant_unit_LUT = {'m': 1e-2/10}
+    translator = Translator()
+    with pytest.raises(ValueError):
+        translator.register_prefix_LUT(redundant_unit_LUT)
+
