@@ -62,3 +62,6 @@ class Dimensional(dict):
     def __rmul__(self, other):
         return self*other
 
+    def __repr__(self):
+        """default (because derived from dict): {'a':1, 'b':2, ...}"""
+        return 'Dimensional({})'.format(super(Dimensional, self).__repr__())

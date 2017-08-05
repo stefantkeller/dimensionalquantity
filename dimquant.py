@@ -18,6 +18,9 @@ class DimQuant(BaseDimQuant):
         else:
             super(DimQuant, self).__init__(*args, **kwargs)
 
+    def __repr__(self):
+        return 'DimQuant({}, {})'.format(self.numeric,self.dimensions)
+
     def __str__(self):
         unit_string = self._T.reverse_unit_lookup(self.dimensions)
         return ' '.join([str(self.numeric), unit_string])
