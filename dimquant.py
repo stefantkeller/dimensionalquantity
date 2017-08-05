@@ -18,6 +18,10 @@ class DimQuant(BaseDimQuant):
         else:
             super(DimQuant, self).__init__(*args, **kwargs)
 
+    def __str__(self):
+        unit_string = self._T.reverse_unit_lookup(self.dimensions)
+        return ' '.join([str(self.numeric), unit_string])
+
     @classmethod
     def register_translator(cls, translator):
         cls._T = translator

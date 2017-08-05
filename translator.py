@@ -143,6 +143,24 @@ class BasicTranslator(object):
         tokens = self._tokenize(string)
         return self._process_tokens(tokens)
 
+    def reverse_unit_lookup(self, dimensions):
+        #TODO: clean up the code, yes the tests pass, but its ugly!
+        if not isinstance(dimensions, (dict,D)):
+            raise TypeError('Cannot lookup {}, which is of type {}'.format(
+                            dimensions, type(dimensions).__name__))
+        output = []
+        for dimension,value in dimensions.items():
+            if value==0: continue
+            for unit,dq in self._unit_LUT.items():
+                for _dim in dq.dimensions:
+                    if len(_dim)>1: continue # the reverse look up works only with atomic base dimensions
+                    _key = list(_dim)[0]
+                    if _key==dimension:
+                        output.append(unit)
+                        if value!=1:
+                            output[-1] += str(value)
+        return '.'.join(output)
+
     def register_unit_LUT(self, unit_LUT, overwrite=False):
         if overwrite:
             self._unit_LUT = dict(unit_LUT) #copy to have different pointer to avoid spooky action from a distance
