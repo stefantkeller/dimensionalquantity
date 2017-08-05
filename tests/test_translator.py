@@ -23,38 +23,30 @@ def test_SI_dimensions(translator):
     assert( translator.translate('cd').dimensions==D({'J': 1}) )
     assert( translator.translate('kg').dimensions==D({'M': 1}) )
 
-def test_SI_dimension_m_multiples(translator):
-    q0 = translator.translate('m').dimensions
-    d0 = D({'L': 1})
-    assert( q0==d0 )
-    q1 = translator.translate('m2').dimensions
-    d1 = D({'L': 2})
-    assert( q1==d1 )
-    q2 = translator.translate('m-2').dimensions
-    d2 = D({'L': -2})
-    assert( q2==d2 )
+@pytest.mark.parametrize('dim_string,expected_dimension',(
+                         ('m',  D({'L': 1})),
+                         ('m2',  D({'L': 2})),
+                         ('m-2',  D({'L': -2})),
+                         ))
+def test_SI_dimension_m_multiples(translator, dim_string, expected_dimension):
+    q0 = translator.translate(dim_string).dimensions
+    assert( q0==expected_dimension )
 
-def test_translating_complex_strings(translator):
-    string = '(kg.s)-2/((m3/K)-3/A2)'
+@pytest.mark.parametrize('string, expected_dimension',(
+                         ('(kg.s)-2/((m3/K)-3/A2)',
+                             D({'M': -2.0, 't': -2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})),
+                         ('(kg.s)2/((m3/K)-3/A2)',
+                             D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})),
+                         ('(kg.s)2/(m3/K)-3/A2',
+                             D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': -2.0})),
+                         ('(kg.s)2/(m3/K)-3/A-2',
+                             D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})),
+                         ('(kg.s)2/(m3/K)3/A-2',
+                             D({'M': 2.0, 't': 2.0, 'L': -9.0, 'T': 3.0, 'i': 2.0})),
+                        ))
+def test_translating_complex_strings(translator, string, expected_dimension):
     res = translator.translate(string).dimensions
-    _D = D({'M': -2.0, 't': -2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})
-    assert( res==_D )
-    string = '(kg.s)2/((m3/K)-3/A2)'
-    res = translator.translate(string).dimensions
-    _D = D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})
-    assert( res==_D )
-    string = '(kg.s)2/(m3/K)-3/A2'
-    res = translator.translate(string).dimensions
-    _D = D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': -2.0})
-    assert( res==_D )
-    string = '(kg.s)2/(m3/K)-3/A-2'
-    res = translator.translate(string).dimensions
-    _D = D({'M': 2.0, 't': 2.0, 'L': 9.0, 'T': -3.0, 'i': 2.0})
-    assert( res==_D )
-    string = '(kg.s)2/(m3/K)3/A-2'
-    res = translator.translate(string).dimensions
-    _D = D({'M': 2.0, 't': 2.0, 'L': -9.0, 'T': 3.0, 'i': 2.0})
-    assert( res==_D )
+    assert( res==expected_dimension )
 
 def test_unknown_unit_prefix_raises_KeyError(translator):
     with pytest.raises(KeyError):

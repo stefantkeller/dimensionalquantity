@@ -16,11 +16,22 @@ def test_dimquant_with_str_init():
     q2_ = DQ('1 m.s-1')
     assert( q2==q2_ )
 
-def test_dimquant_str_out():
-    q0 = DQ(1, D({'L': 1, 't': -1}))
-    assert( str(q0)=='1 m.s-1' )
+@pytest.mark.parametrize('expected_str,dq',(
+                         ('1 m.s-1',DQ(1, D({'L': 1, 't': -1}))),
+                         ('2 m.s-1',DQ(2, D({'L': 1, 't': -1}))),
+                         ('1 m2.s-1',DQ(1, D({'L': 2, 't': -1}))),
+                        ))
+def test_dimquant_str_out(expected_str,dq):
+    assert( str(dq)==expected_str )
 
-def test_dimquant_repr_out():
-    q0 = DQ(1, D({'L': 1, 't': -1}))
-    assert( repr(q0)=='DimQuant(1, Dimensional({\'L\': 1, \'t\': -1}))' )
+@pytest.mark.parametrize('expected_repr,dq',(
+                         ('DimQuant(1, Dimensional({\'L\': 1, \'t\': -1}))',
+                             DQ(1, D({'L': 1, 't': -1}))),
+                         ('DimQuant(2, Dimensional({\'L\': 1, \'t\': -1}))',
+                             DQ(2, D({'L': 1, 't': -1}))),
+                         ('DimQuant(1, Dimensional({\'L\': 2, \'t\': -1}))',
+                             DQ(1, D({'L': 2, 't': -1}))),
+                        ))
+def test_dimquant_repr_out(expected_repr,dq):
+    assert( repr(dq)==expected_repr )
 

@@ -77,15 +77,18 @@ def test_add_create_new_instance_dimensions():
     assert(id(q0.dimensions)!=id(q2.dimensions) \
             and id(q1.dimensions)!=id(q2.dimensions))
 
-def test_add_basics():
-    q0 = DQ(1, D({'a':1, 'b':0, 'c':0}))
-    q1 = DQ(2, D({'a':1, 'b':0, 'c':0}))
-    q2_exp = DQ(3, D({'a':1, 'b':0, 'c':0}))
-
-    q2_real = q0 + q1
-
-    assert(q2_exp.numeric == q2_real.numeric)
-    assert(q2_exp.dimensions == q2_real.dimensions)
+@pytest.mark.parametrize('summand0, summand1, expectation',(
+                         (DQ(1, D({'a':1, 'b':0, 'c':0})),
+                          DQ(2, D({'a':1, 'b':0, 'c':0})),
+                          DQ(3, D({'a':1, 'b':0, 'c':0}))),
+                         (DQ(4, D({'a':1, 'b':1, 'c':0})),
+                          DQ(5, D({'a':1, 'b':1, 'c':0})),
+                          DQ(9, D({'a':1, 'b':1, 'c':0}))),
+                        ))
+def test_add_basics(summand0, summand1, expectation):
+    real = summand0 + summand1
+    assert(expectation.numeric == real.numeric)
+    assert(expectation.dimensions == real.dimensions)
 
 def test_sub_wrong_dimensions():
     q0 = DQ(1,{'a':2})
@@ -121,16 +124,18 @@ def test_sub_create_new_instance_dimensions():
     assert(id(q0.dimensions)!=id(q2.dimensions) \
             and id(q1.dimensions)!=id(q2.dimensions))
 
-def test_sub_basics():
-    q0 = DQ(1, D({'a':1, 'b':0, 'c':0}))
-    q1 = DQ(2, D({'a':1, 'b':0, 'c':0}))
-    q2_exp = DQ(-1, D({'a':1, 'b':0, 'c':0}))
-
-    q2_real = q0 - q1
-
-    assert(q2_exp.numeric == q2_real.numeric)
-    assert(q2_exp.dimensions == q2_real.dimensions)
-
+@pytest.mark.parametrize('minuend, subtrahend, expectation',(
+                         (DQ(1, D({'a':1, 'b':0, 'c':0})),
+                          DQ(2, D({'a':1, 'b':0, 'c':0})),
+                          DQ(-1, D({'a':1, 'b':0, 'c':0}))),
+                         (DQ(5, D({'a':1, 'b':1, 'c':0})),
+                          DQ(3, D({'a':1, 'b':1, 'c':0})),
+                          DQ(2, D({'a':1, 'b':1, 'c':0}))),
+                        ))
+def test_sub_basics(minuend, subtrahend, expectation):
+    real = minuend - subtrahend
+    assert(expectation.numeric == real.numeric)
+    assert(expectation.dimensions == real.dimensions)
 
 def test_mul_create_new_instances():
     q0 = DQ()
@@ -150,20 +155,18 @@ def test_mul_create_new_instance_dimensions():
     assert(id(q0.dimensions)!=id(q2_real.dimensions) \
             and id(q1.dimensions)!=id(q2_real.dimensions))
 
-def test_mul_basics():
-    q0 = DQ(2, D({'a':1, 'b':-1}))
-    q1 = DQ(3, D({'b':1, 'c':1}))
-    q2 = DQ(5, D({'c':2}))
-    q01_exp = DQ(6, D({'a':1, 'b':0, 'c':1}))
-    q02_exp = DQ(10, D({'a':1, 'b':-1, 'c':2}))
-
-    q01_real = q0 * q1
-    q02_real = q0 * q2
-
-    assert(q01_exp.numeric == q01_real.numeric)
-    assert(q01_exp.dimensions == q01_real.dimensions)
-    assert(q02_exp.numeric == q02_real.numeric)
-    assert(q02_exp.dimensions == q02_real.dimensions)
+@pytest.mark.parametrize('factor0, factor1, expectation',(
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          DQ(3, D({'b':1, 'c':1})),
+                          DQ(6, D({'a':1, 'b':0, 'c':1}))),
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          DQ(5, D({'c':2})),
+                          DQ(10, D({'a':1, 'b':-1, 'c':2}))),
+                        ))
+def test_mul_basics(factor0, factor1, expectation):
+    real = factor0 * factor1
+    assert(expectation.numeric == real.numeric)
+    assert(expectation.dimensions == real.dimensions)
 
 def test_mul_other_types():
     q0 = DQ(1)
@@ -205,20 +208,18 @@ def test_div_create_new_instance_dimensions():
     assert(id(q0.dimensions)!=id(q2_real.dimensions) \
             and id(q1.dimensions)!=id(q2_real.dimensions))
 
-def test_div_basics():
-    q0 = DQ(2, D({'a':1, 'b':-1}))
-    q1 = DQ(8, D({'b':1, 'c':1}))
-    q2 = DQ(0.5, D({'c':2}))
-    q01_exp = DQ(0.25, D({'a':1, 'b':-2, 'c':-1}))
-    q02_exp = DQ(4, D({'a':1, 'b':-1, 'c':-2}))
-
-    q01_real = q0 / q1
-    q02_real = q0 / q2
-
-    assert(q01_exp.numeric == q01_real.numeric)
-    assert(q01_exp.dimensions == q01_real.dimensions)
-    assert(q02_exp.numeric == q02_real.numeric)
-    assert(q02_exp.dimensions == q02_real.dimensions)
+@pytest.mark.parametrize('numerator, denominator, expectation',(
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          DQ(8, D({'b':1, 'c':1})),
+                          DQ(0.25, D({'a':1, 'b':-2, 'c':-1}))),
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          DQ(0.5, D({'c':2})),
+                          DQ(4, D({'a':1, 'b':-1, 'c':-2}))),
+                        ))
+def test_div_basics(numerator, denominator, expectation):
+    real = numerator / denominator
+    assert(expectation.numeric == real.numeric)
+    assert(expectation.dimensions == real.dimensions)
 
 def test_div_other_types():
     q0 = DQ(1)
@@ -258,23 +259,21 @@ def test_pow_create_new_instance_dimensions():
     assert(q1_exp.dimensions == q1_real.dimensions)
     assert(id(q0.dimensions)!=id(q1_real.dimensions))
 
-def test_pow_basics():
-    q = DQ(2, D({'a':1, 'b':-1}))
-    q2_exp = DQ(4, D({'a':2, 'b':-2}))
-    q05_exp = DQ(2**0.5, D({'a':1/2, 'b':-1/2}))
-
-    q2_real = q**2
-    q05_real = q**0.5
-
-    assert(q2_exp.numeric == q2_real.numeric)
-    assert(q2_exp.dimensions == q2_real.dimensions)
-    assert(q05_exp.numeric == q05_real.numeric)
-    assert(q05_exp.dimensions == q05_real.dimensions)
-
-    q1 = DQ(2)
-    q2_alt = q**q1
-
-    assert(q2_alt == q2_exp)
+@pytest.mark.parametrize('base, exponent, expectation',(
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          2,
+                          DQ(4, D({'a':2, 'b':-2}))),
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          0.5,
+                          DQ(2**0.5, D({'a':1/2, 'b':-1/2}))),
+                         (DQ(2, D({'a':1, 'b':-1})),
+                          DQ(2),
+                          DQ(4, D({'a':2, 'b':-2}))),
+                        ))
+def test_pow_basics(base, exponent, expectation):
+    real = base**exponent
+    assert(expectation.numeric == real.numeric)
+    assert(expectation.dimensions == real.dimensions)
 
 def test_rpow_basics():
     q = DQ(2, D({'a':1, 'b':-1}))
@@ -291,14 +290,11 @@ def test_rpow_basics():
     value = base**q2
     assert( value==4 )
 
-def test_pow_other_incompat_types():
+@pytest.mark.parametrize('other',([1], (1,2), {'a':1},))
+def test_pow_other_incompat_types(other):
     q0 = DQ(1)
     with pytest.raises(TypeError):
-        q1 = q0**[1]
-    with pytest.raises(TypeError):
-        q1 = (1,2)**q0
-    with pytest.raises(TypeError):
-        q1 = q0**{'a':1}
+        q1 = q0**other
 
 def test_non_dimensional():
     q0 = DQ()
