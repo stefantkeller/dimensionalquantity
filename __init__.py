@@ -5,7 +5,7 @@ __version__ = '0.3'
 #__version__ = get_distribtion('dimensionalquantity').version
 #__author__ =  get_distribtion('dimensionalquantity').author
 
-from . dimensional import *
-from . basedimquant import *
-from . translator import *
-from . dimquant import *
+from . dimensional import Dimensional
+from . basedimquant import BaseDimQuant
+from . translator import BasicTranslator, Translator
+from . dimquant import DimQuant
