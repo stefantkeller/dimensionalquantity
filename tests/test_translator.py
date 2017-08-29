@@ -1,7 +1,16 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from collections import OrderedDict
+"""
+Dimensional works with a regular dict.
+Problem with regular dicts:
+the order of their keys isn't guaranteed.
+From a functional point of view this is not a problem:
+'m.s-1' are absolutely equivalent to 's-1.m'.
+But from a testing point of view, these two strings differ from each other.
+Consequentially, the following tests pass
+for any of several equivalent strings.
+"""
 
 import pytest
 
@@ -54,14 +63,23 @@ def test_unknown_unit_prefix_raises_KeyError(translator):
     with pytest.raises(ValueError):
         translator.translate('w') # this unit doesn't exist in the SI base units (also not in extended because lower case)
 
-@pytest.mark.parametrize('expected_str,dimensions',(
-                         ('m', D({'L':1})),
-                         ('m', {'L':1}),
-                         ('m.s-1', D({'L':1, 't':-1})),
+@pytest.mark.parametrize('expected_strs,dimensions',(
+                         ( ('m'),
+                             D({'L':1})),
+                         ( ('m'),
+                             {'L':1}),
+                         ( ('m.s-1','s-1.m'),
+                             D({'L':1, 't':-1})),
                          ))
-def test_reverse_unit_lookup(translator, expected_str, dimensions):
+def test_reverse_unit_lookup(translator, expected_strs, dimensions):
     real_str = translator.reverse_unit_lookup(dimensions)
-    assert( expected_str==real_str )
+    passed = False
+    for possible_str in expected_strs:
+        if possible_str==real_str:
+            passed = True
+            break
+    if not passed: # raise assertion error which highlights the difference
+        assert( possible_str==real_str )
 
 def test_reverse_unit_lookup_wrong_input_type(translator):
     with pytest.raises(TypeError):
