@@ -1,6 +1,12 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+This file defines the class BaseDimQuant.
+This class builds the basis for DimQuant:
+combining a numerical value with an instance of Dimensional.
+"""
+
 from functools import wraps
 
 from . import Dimensional as D
@@ -48,6 +54,17 @@ def compatible_with_comparison(comparison_name='<undefined>'):
     return comparison
 
 class BaseDimQuant(object):
+    """Base class for working with dimensional quantities.
+    
+    Args:
+        numeric (int, float, complex): A number representing the amount the quantity.
+        dimensions (dict, Dimensional): The dimensions of the quantity.
+        
+    .. seealso:: 
+        This class isn't an abstract or meta class.
+        Nonetheless, this class isn't intended to be be used on its own:
+        DimQuant (which is derived from BaseDimQuant) offers a more convenient string based constructor.
+        :py:meth: `dimensionalquantity.DimQuant`"""
     def __init__(self, numeric=0, dimensions=D({})):
         self.numeric=numeric
         self.dimensions=dimensions

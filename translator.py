@@ -1,6 +1,13 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""This `translator.py` provides the classes `BasicTranslator`, and `Translator`.
+These two classes enable the functionality
+to initialize a `DimQuant` with a string representation of a dimensional quantity,
+e.g. '1 m.s',
+instead of the more cumbersome `BaseDimQuant` init
+with a numeric and a Dimensional argument."""
+
 import re # https://docs.python.org/3/library/re.html#writing-a-tokenizer
 from collections import namedtuple
 
@@ -47,6 +54,22 @@ SI_prefix_LUT = {'Y': 1e24,
                  }
 
 class BasicTranslator(object):
+    """Class that is able to convert a string representation of a dimensional quantity, e.g. '1 m.s', into a Dimensional object.
+    This class further allows to convert back, from a Dimensional to a string.
+    
+    Args:
+        The init of this class takes no arguments.
+        The main use of this class is through the two methods `translate()` and `reverse_unit_lookup()`.
+        However, before you can use those two methods (e.g. to hand it the above example of '1 m.s'),
+        you have to register (`register_*_LUT()`) a look-up-table.
+        
+    .. seealso:
+        If you're interested to work with pre-registered LUTs (corresponding to default SI support) use `Translator()` instead.
+        This is a child of `BasicTranslator`, and the recomended way of using `BasicTranslator`;
+        because `BasicTranslator` provides only a naked infrastructure.
+        :py:meth: `dimensionalquantity.Translator`
+    """
+
     # the following protected entries are available (and identical)
     # for all instances of Translator()
     # https://docs.python.org/3/library/re.html#writing-a-tokenizer
@@ -186,6 +209,26 @@ class BasicTranslator(object):
                     self._prefix_LUT[symbol] = value
 
 class Translator(BasicTranslator):
+    """Class child of BasicTranslator.
+    This means, instances of this class manage out of the box to convert back and forth,
+    from a Dimensional to a string.
+    
+    Args:
+        The init of this class takes no arguments.
+        The main use of this class is through the two methods `translate()` and `reverse_unit_lookup()`.
+        However, before you can use those two methods, you have to register `register_*_LUT()` a look-up-table.
+        By default SI LUTs are registered (hence the 'manage out of the box' statement above.)
+        
+    .. seealso:
+        An instance of `Translator` is used in `DimQuant`.
+        This allows users to initialize a DimQuant using a string
+        rather than a numeric and a Dimensional argument,
+        as required by `BaseDimQuant`.
+        In fact, the `Translator` instance --
+        and with it the pre-registered SI LUTs --
+        is the key difference between `BaseDimQuant` and `DimQuant`.
+        :py:meth: `dimensionalquantity.DimQuant`
+    """
     def __init__(self):
         super(Translator, self).__init__()
         self.register_unit_LUT(SI_unit_LUT)

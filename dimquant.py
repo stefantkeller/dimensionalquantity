@@ -1,11 +1,35 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+This file defines the most important class DimQuant,
+which is a child of BaseDimQuant.
+The difference with respect to BaseDimQuant is the ability to
+initialize a DimQuant instance using a string representation
+of a dimensional quantity.
+In BaseDimQuant the user has to provide two arguments:
+a numerical value, and a Dimensional instance.
+In DimQuant the instanciation is simplified.
+"""
+
 from . import Dimensional as D
 from . import BaseDimQuant
 from . import Translator
 
 class DimQuant(BaseDimQuant):
+    """Class for working with dimensional quantities.
+    
+    Args:
+        args (string): the usual way to instanciate an object of this class is
+            by means of a string such as '1 kg/m2', or '2 m.s'.
+        *args (optional): alternatively to the string representation of the quantity
+            this class accepts the same arguments as BaseDimQuant.
+
+    .. seealso:: 
+        The legal dimensional identifiers for the string representation
+        can be found in
+        :py:meth: `dimensionalquantity.Translator`"""
+
     _T = Translator()
 
     def __init__(self, *args, **kwargs):

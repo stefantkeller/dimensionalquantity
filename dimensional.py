@@ -1,6 +1,18 @@
 #! /usr/bin/python3
 # -*- coding: utf-8 -*-
 
+"""
+This file defines the class Dimensional.
+This class is at the heart of the concept behind dimensionalquantity:
+each dimension -- as a name -- is represented by a dictionary key,
+with the corresponding value being the exponent of how often a certain dimension is referred to.
+For example, a volume is given by a qubic length.
+Hence, the Dimensional of a volume is represented by {'L':3}.
+This representation is simple enough and doesn't need its own class.
+The class Dimensional provides the functionality
+to add, subtract, multiply, etc. instances of Dimensional.
+"""
+
 from functools import wraps
 
 # wrapper for Dimensional operations (such as __add__, __sub__) to
@@ -33,6 +45,13 @@ def compatible_with_operation(operation='<undefined>'):
     return decorate_specified_operation
 
 class Dimensional(dict):
+    """Base class for working with dimensions.
+    
+    Args:
+        Any valid dictionary argument.
+        The keys represent the name of the dimension,
+        while the values how often said a certain dimension is referred to."""
+
     def __getitem__(self, key):
         return super(Dimensional, self).get(key,0)
     
