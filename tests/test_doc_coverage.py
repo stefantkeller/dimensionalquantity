@@ -53,7 +53,13 @@ def test_inspect_selected_members():
         assert( any([m[1].__name__ == name for m in sm]) )
 
 @pytest.mark.parametrize('name,documentable',
-                         inspect_selected_members(dimensionalquantity) )
+                         inspect_selected_members(dimensionalquantity)
+                         + inspect_selected_members(D)
+                         + inspect_selected_members(BDQ)
+                         + inspect_selected_members(BT)
+                         + inspect_selected_members(T)
+                         + inspect_selected_members(DQ)
+                         )
 def test_doc_string_coverage(name,documentable):
     """Note: `name` isn't used explicitly,
     but (i) since pytest prints the input arguments of a failing test,
