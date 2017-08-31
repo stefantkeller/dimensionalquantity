@@ -32,6 +32,26 @@ def inspect_selected_members(of_what):
                                   not x.__name__.startswith('_') )
                              )
 
+# have to test helper function,
+# to ensure the test depending on his helper function
+# do actually do test what we expect to test!
+def test_inspect_selected_members():
+    class PublicClass(object):
+        def _protected_method(self):
+            pass
+        def public_method(self):
+            pass
+    sm = inspect_selected_members(PublicClass)
+    # sm contains:
+    # * the class itself, and
+    # * `public_method`,
+    # but the leading _ in `_protected_method` is ignored
+    assert( len(sm)==2 )
+    # regarding what name to expect:
+    # the class goes in as 'type', not as 'PublicClass'
+    for name in ('type', 'public_method'):
+        assert( any([m[1].__name__ == name for m in sm]) )
+
 @pytest.mark.parametrize('name,documentable',
                          inspect_selected_members(dimensionalquantity) )
 def test_doc_string_coverage(name,documentable):
