@@ -177,4 +177,22 @@ class BaseDimQuant(object):
         return (self.numeric <= other.numeric)
 
     def is_non_dimensional(self):
+        """Method to test whether the dimensional quantity
+        is actually dimension-free.
+        Dimension-free represents that either
+        the length of dimensions declared is 0
+        (i.e. no dimensions declared), or
+        all declared dimensions are 0.
+        A dimensional quantity can be dimension-free,
+        i.e. non-dimensional,
+        e.g. if a length quantity is divided by another length.
+        The start point of such a division is necessarily
+        a dimensional quantity
+        (or at least, the point of this module is to support such a case)
+        but the result is a pure number.
+
+        .. seealso:
+            It doesn't make sense to have a dimensional exponent;
+            e.g. 2**'1 m' isn't defined.
+        """
         return ( (len(self.dimensions)==0) or not any(self.dimensions.values()) )
