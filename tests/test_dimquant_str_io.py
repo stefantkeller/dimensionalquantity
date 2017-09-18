@@ -15,6 +15,7 @@ for any of several equivalent strings.
 import pytest
 
 from dimensionalquantity import Dimensional as D
+from dimensionalquantity import BaseDimQuant as BDQ
 from dimensionalquantity import DimQuant as DQ
 
 def test_dimquant_with_str_init():
@@ -43,6 +44,26 @@ def test_dimquant_str_out(expected_strs,dq):
         assert( str(dq)==possible_str )
 
 @pytest.mark.parametrize('expected_reprs,dq',(
+                         ( ('BaseDimQuant(1, Dimensional({\'L\': 1, \'t\': -1}))',
+                            'BaseDimQuant(1, Dimensional({\'t\': -1, \'L\': 1}))'),
+                             BDQ(1, D({'L': 1, 't': -1}))),
+                         ( ('BaseDimQuant(2, Dimensional({\'L\': 1, \'t\': -1}))',
+                            'BaseDimQuant(2, Dimensional({\'t\': -1, \'L\': 1}))'),
+                             BDQ(2, D({'L': 1, 't': -1}))),
+                         ( ('BaseDimQuant(1, Dimensional({\'L\': 2, \'t\': -1}))',
+                            'BaseDimQuant(1, Dimensional({\'t\': -1, \'L\': 2}))'),
+                             BDQ(1, D({'L': 2, 't': -1}))),
+                        ))
+def test_basedimquant_repr_out(expected_reprs,dq):
+    passed = False
+    for possible_repr in expected_reprs:
+        if repr(dq)==possible_repr:
+            passed = True
+            break
+    if not passed: # raise assertion error which highlights the difference
+        assert( repr(dq)==possible_repr )
+
+@pytest.mark.parametrize('expected_reprs,dq',(
                          ( ('DimQuant(1, Dimensional({\'L\': 1, \'t\': -1}))',
                             'DimQuant(1, Dimensional({\'t\': -1, \'L\': 1}))'),
                              DQ(1, D({'L': 1, 't': -1}))),
@@ -61,4 +82,14 @@ def test_dimquant_repr_out(expected_reprs,dq):
             break
     if not passed: # raise assertion error which highlights the difference
         assert( repr(dq)==possible_repr )
+
+@pytest.mark.parametrize('expected_str, dq', (
+                         ('1 m/s', DQ('1 m')/DQ('1 s')),
+                         ('2 m/s', DQ('1 m/s')+DQ('1 m/s')),
+                         ('1 m/s', DQ('2 m/s')-DQ('1 m/s')),
+                         ('1 m/s', DQ('1 m')*DQ('1 s-1')),
+                         ))
+def test_dimquant_str_out_after_calc(expected_str, dq):
+    real_str = str(dq)
+    assert( expected_str==real_str )
 
