@@ -163,10 +163,49 @@ class BasicTranslator(object):
                                         'to translate into a DimQuant']))
 
     def translate(self, string):
+        """Translates (aka converts) a string representation of the dimension
+        into a DimQuant instance.
+        Example (this of course depends on what look-up-tables (LUTs) are registered):
+        >>> q = self.translate('m/s2')
+        >>> print(q)
+        DimQuant(1, Dimensional({'L':1, 't':-2})
+        >>> q = self.translate('cm.s-2')
+        >>> print(q)
+        DimQuant(0.01, Dimensional({'L':1, 't':-2})
+
+        Args:
+            string (str): String of units to be found in registered LUTs,
+                separated by either a dot '.', or a divisor '/',
+                as shown in the above examples.
+
+        Return:
+            DimQuant representing conversion factor and dimensions according to LUT.
+
+        .. seealso:: 
+            :py:meth: `dimensionalquantity.BasicTranslator.register_unit_LUT`
+            :py:meth: `dimensionalquantity.BasicTranslator.register_prefix_LUT`
+        """
         tokens = self._tokenize(string)
         return self._process_tokens(tokens)
 
     def reverse_unit_lookup(self, dimensions):
+        """Translates (aka converts) a Dimensional instance into a string representation.
+        Example (this of course depends on what look-up-tables (LUTs) are registered):
+        >>> d = Dimensional({'L':1, 't':-2'})
+        >>> s = self.reverse_unit_lookup(d)
+        >>> print(s)
+        'm.s-2'
+        
+        Args:
+            dimensions (Dimensional, dict): the dimensions you want to convert into a string.
+
+        Return:
+            string representation of the Dimensional input argument.
+            
+        .. seealso:: 
+            :py:meth: `dimensionalquantity.BasicTranslator.register_unit_LUT`
+            :py:meth: `dimensionalquantity.BasicTranslator.register_prefix_LUT`
+        """
         #TODO: clean up the code, yes the tests pass, but its ugly!
         if not isinstance(dimensions, (dict,D)):
             raise TypeError('Cannot lookup {}, which is of type {}'.format(
@@ -184,8 +223,36 @@ class BasicTranslator(object):
                             output[-1] += str(value)
         return '.'.join(output)
 
-    def register_unit_LUT(self, unit_LUT, overwrite=False):
-        if overwrite:
+    def register_unit_LUT(self, unit_LUT, override=False):
+        """The Translator converts string representations of a dimensional quantity
+        into a DimQuant.
+        The rules how to do this conversion is stored
+        in two look-up-tables (LUTs):
+        one LUT describing the units (like 'm' for meter),
+        one LUT describing the unit prefixes (like 'k' for kilo).
+        This method registers such a unit LUT to a Translator.
+        >>> example_LUT = {'m': BaseDimQuant(1, Dimensional({'L': 1}))}
+        >>> translator = BasicTranslator()
+        >>> translator.register_unit_LUT(example_LUT)
+        
+        Args:
+            unit_LUT (dict): a dictionary whose keys state the string to translate
+                and whose values are a BaseDimQuant
+                in which said string is supposed to be translated
+            override (Bool=False): indicate whether a previously registered LUT
+                is supposed to be overridden (True) or not (False, default).
+                If False, the keys of the new (additional) LUT have to be
+                unique with respect to previously registered keys.
+                Otherwise a ValueError is raised.
+                
+        Return:
+            None or ValueError if the present LUT is not overridden and
+            a key of the new LUT is already present in the current LUT.
+            
+        .. seealso:: 
+            :py:meth: `dimensionalquantity.BaseDimQuant`
+            :py:meth: `dimensionalquantity.DimQuant`"""
+        if override:
             self._unit_LUT = dict(unit_LUT) #copy to have different pointer to avoid spooky action from a distance
         else:
             for (symbol, dimension) in unit_LUT.items():
@@ -197,8 +264,47 @@ class BasicTranslator(object):
                 else:
                     self._unit_LUT[symbol] = dimension
 
-    def register_prefix_LUT(self, prefix_LUT, overwrite=False):
-        if overwrite:
+    def register_prefix_LUT(self, prefix_LUT, override=False):
+        """The Translator converts string representations of a dimensional quantity
+        into a DimQuant.
+        The rules how to do this conversion is stored
+        in two look-up-tables (LUTs):
+        one LUT describing the units (like 'm' for meter),
+        one LUT describing the unit prefixes (like 'k' for kilo, i.e. 1e3).
+        This method registers such a unit prefix LUT to a Translator.
+        >>> example_prefix_LUT = {'k': 1e3}
+        >>> translator = BasicTranslator()
+        >>> translator.register_prefix_LUT(example_prefix_LUT)
+        
+        Args:
+            prefix_LUT (dict): a dictionary whose keys state the string to translate
+                (currently only single letter prefixes are supported)
+                and whose values are a float which states the relative value
+                compared to a certain baseline
+                (e.g. for regular SI units, 'k' would typically signify '1e3')
+            override (Bool=False): indicate whether a previously registered LUT
+                is supposed to be overridden (True) or not (False, default).
+                If False, the keys of the new (additional) LUT (i.e. the prefixes)
+                have to be unique with respect to previously registered keys.
+                Otherwise a ValueError is raised.
+                
+        Return:
+            None or ValueError if the present LUT is not overridden and
+            a key of the new LUT is already present in the current LUT.
+            NotImplementedError if the prefix_LUT contains keys whose string
+            is more than 1 letter (0 letter (empty string)) is allowed
+            and typically signifies unity 1e0.
+            
+        .. seealso:: 
+            :py:meth: `dimensionalquantity.BaseDimQuant`
+            :py:meth: `dimensionalquantity.DimQuant`"""
+        for symbol in prefix_LUT.keys():
+            if len(symbol)>1:
+                raise NotImplementedError('Prefixes have to have only 1 (one) letter,'\
+                                          + ' other string sizes are currently not supported.'\
+                                          + ' The erroneous symbol ({}) contains {} letters.'.format(
+                                              symbol, len(symbol)))
+        if override:
             self._prefix_LUT = dict(prefix_LUT) #copy to have different pointer to avoid spooky action from a distance
         else:
             for (symbol, value) in prefix_LUT.items():

@@ -106,7 +106,7 @@ def test_register_unit_LUT(setup_and_clean_DQ_with_basic_Translator):
     q_fanta = DQ('2 fanta') # now it does exist
     assert( q_si==q_fanta )
 
-def test_register_unit_LUT_overwrite(setup_and_clean_DQ_with_basic_Translator):
+def test_register_unit_LUT_override(setup_and_clean_DQ_with_basic_Translator):
     # the `setup_and_clean_DQ_with_basic_Translator` ensures
     # DQ doesn't suddenly come with weird LUTs preregistered
     # despite the following having been registered in a prev test;
@@ -119,7 +119,7 @@ def test_register_unit_LUT_overwrite(setup_and_clean_DQ_with_basic_Translator):
 
     fantasy_unit_LUT = {'fanta': DQ('2.54 cm')}
     translator = Translator()
-    translator.register_unit_LUT(fantasy_unit_LUT, overwrite=True)
+    translator.register_unit_LUT(fantasy_unit_LUT, override=True)
     DQ.register_translator(translator)
 
     assert(id(pre_T) != DQ._T) # since overwritten
@@ -141,21 +141,21 @@ def test_register_prefix_LUT(setup_and_clean_DQ_with_basic_Translator):
 
     assert(DQ('1 qm') == DQ('314 cm')) # `c` prefix is still known
 
-def test_register_prefix_LUT_overwrite(setup_and_clean_DQ_with_basic_Translator):
+def test_register_prefix_LUT_override(setup_and_clean_DQ_with_basic_Translator):
     with pytest.raises(KeyError):
         q_fanta = DQ('1 qm') # `m` is known, but prefix `q` not
     
-    q_before_overwrite = DQ('314 cm')
+    q_before_override = DQ('314 cm')
 
     fantasy_prefix_LUT = {'q': 3.14}
     translator = Translator()
-    translator.register_prefix_LUT(fantasy_prefix_LUT, overwrite=True)
+    translator.register_prefix_LUT(fantasy_prefix_LUT, override=True)
     DQ.register_translator(translator)
 
-    assert(DQ('1 qm') == q_before_overwrite)
+    assert(DQ('1 qm') == q_before_override)
 
     with pytest.raises(KeyError):
-        q_after_overwrite = DQ('314 cm')
+        q_after_override = DQ('314 cm')
 
 def test_register_unit_LUT_with_already_existing(setup_and_clean_DQ_with_basic_Translator):
     redundant_unit_LUT = {'m': DQ('100 cm')}
@@ -169,3 +169,8 @@ def test_register_prefix_LUT_with_already_existing(setup_and_clean_DQ_with_basic
     with pytest.raises(ValueError):
         translator.register_prefix_LUT(redundant_unit_LUT)
 
+def test_register_prefix_LUT_with_more_than_1_letter(setup_and_clean_DQ_with_basic_Translator):
+    notimplemented_prefix = {'da': 10}
+    translator = Translator()
+    with pytest.raises(NotImplementedError):
+        translator.register_prefix_LUT(notimplemented_prefix)
