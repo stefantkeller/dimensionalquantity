@@ -77,13 +77,13 @@ def test_dimquant_repr_out(expected_reprs,dq):
     assert( accept_multiple_possibilities(expected_reprs, dq, repr) )
 
 @pytest.mark.parametrize('expected_strs, dq', (
-                         ( ('1.0 m/s', '1.0 m.s-1.0', '1.0 s-1.0.m'),
+                         ( ('1.0 m/s', '1.0 m.s-1.0', '1.0 s-1.0.m', '1.0 s-1.m', '1.0 m.s-1'),
                              DQ('1 m')/DQ('1 s')),
-                         ( ('2.0 m/s', '2.0 m.s-1.0', '2.0 s-1.0.m'),
+                         ( ('2.0 m/s', '2.0 m.s-1.0', '2.0 s-1.0.m', '2.0 s-1.m', '2.0 m.s-1'),
                              DQ('1 m/s')+DQ('1 m/s')),
-                         ( ('3.0 m/s', '3.0 m.s-1.0', '3.0 s-1.0.m'),
+                         ( ('3.0 m/s', '3.0 m.s-1.0', '3.0 s-1.0.m', '3.0 s-1.m', '3.0 m.s-1'),
                              DQ('4 m/s')-DQ('1 m/s')),
-                         ( ('4.0 m/s', '4.0 m.s-1.0', '4.0 s-1.0.m'),
+                         ( ('4.0 m/s', '4.0 m.s-1.0', '4.0 s-1.0.m', '4.0 s-1.m', '4.0 m.s-1'),
                              DQ('2 m')*DQ('2 s-1')),
                          ))
 def test_dimquant_str_out_after_calc(expected_strs, dq):
