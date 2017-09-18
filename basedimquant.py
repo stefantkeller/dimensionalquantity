@@ -95,8 +95,8 @@ class BaseDimQuant(object):
     
     @compatible_with_linear_operation('+')
     def __add__(self, other):
-        return BaseDimQuant(numeric = self.numeric+other.numeric,\
-                        dimensions = D(self.dimensions))
+        return self.__class__(numeric = self.numeric+other.numeric,\
+                              dimensions = D(self.dimensions))
     # the __radd__ isn't actually necessary
     # because the compatible_with_linear_operation decorator
     # anyway only accepts other's of BaseDimQuant type
@@ -108,8 +108,8 @@ class BaseDimQuant(object):
 
     @compatible_with_linear_operation('-')
     def __sub__(self, other):
-        return BaseDimQuant(numeric = self.numeric-other.numeric,\
-                        dimensions = D(self.dimensions))
+        return self.__class__(numeric = self.numeric-other.numeric,\
+                              dimensions = D(self.dimensions))
     # not implementing __rsub__ for same reason as __radd__
     #@compatible_with_linear_operation('-')
     #def __rsub__(self, other):
@@ -117,33 +117,35 @@ class BaseDimQuant(object):
 
     def __mul__(self, other):
         if isinstance(other, BaseDimQuant):
-            return BaseDimQuant(numeric = self.numeric*other.numeric,\
-                            dimensions = self.dimensions+other.dimensions)
+            #return BaseDimQuant(numeric = self.numeric*other.numeric,\
+            #                dimensions = self.dimensions+other.dimensions)
+            return self.__class__(numeric = self.numeric*other.numeric,\
+                                  dimensions = self.dimensions+other.dimensions)
         else:
-            return BaseDimQuant(numeric = self.numeric*other,\
-                            dimensions = D(self.dimensions))
+            return self.__class__(numeric = self.numeric*other,\
+                                  dimensions = D(self.dimensions))
     def __rmul__(self, other):
         return self*other
 
     def __truediv__(self, other):
         if isinstance(other, BaseDimQuant): 
-            return BaseDimQuant(numeric = self.numeric/other.numeric,\
-                            dimensions = self.dimensions-other.dimensions)
+            return self.__class__(numeric = self.numeric/other.numeric,\
+                                  dimensions = self.dimensions-other.dimensions)
         else:
-            return BaseDimQuant(numeric = self.numeric/other,\
-                            dimensions = D(self.dimensions))
+            return self.__class__(numeric = self.numeric/other,\
+                                  dimensions = D(self.dimensions))
 
     def __rtruediv__(self, other):
         # if isinstance(other, BaseDimQuant): this case is covered by __truediv__
-        return BaseDimQuant(numeric = other/self.numeric,\
-                        dimensions = -1*D(self.dimensions))
+        return self.__class__(numeric = other/self.numeric,\
+                              dimensions = -1*D(self.dimensions))
 
     # __pow__ makes sense only if the exponent is either not an instance of BaseDimQuant
     # or if all entries of BaseDimQuant.dimensions are 0
     def __pow__(self, other):
         if not isinstance(other, BaseDimQuant):
-            return BaseDimQuant(numeric = self.numeric**other,\
-                            dimensions = self.dimensions*other)
+            return self.__class__(numeric = self.numeric**other,\
+                                  dimensions = self.dimensions*other)
         else:
             if not other.is_non_dimensional():
                 raise NotImplementedError(' '.join(['The exponent cannot be a dimensional quantity,',\
@@ -154,7 +156,7 @@ class BaseDimQuant(object):
                 else:
                     return self**other.numeric
     def __rpow__(self, other):
-        return BaseDimQuant(other)**self
+        return self.__class__(other)**self
 
     @compatible_with_comparison('==')
     def __eq__(self, other):
@@ -199,3 +201,10 @@ class BaseDimQuant(object):
             e.g. 2**'1 m' isn't defined.
         """
         return ( (len(self.dimensions)==0) or not any(self.dimensions.values()) )
+
+    def __repr__(self):
+        """Example:
+        >>> q = BaseDimQuant('1 m/s')
+        >>> print(q)
+        BaseDimQuant(1, Dimensional({'L':1, 't':-1})"""
+        return 'BaseDimQuant({}, {})'.format(self.numeric,self.dimensions)
