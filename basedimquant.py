@@ -57,7 +57,7 @@ class BaseDimQuant(object):
     """Base class for working with dimensional quantities.
     
     Args:
-        numeric (int, float, complex): A number representing the amount the quantity.
+        numeric (int, float, complex): A number representing the amount of the dimensional quantity.
         dimensions (dict, Dimensional): The dimensions of the quantity.
         
     .. seealso:: 
@@ -71,6 +71,7 @@ class BaseDimQuant(object):
 
     @property
     def numeric(self):
+        """A number (int, float, complex) representing the amount of the dimensional quantity."""
         return self.__numeric
     @numeric.setter
     def numeric(self, value):
@@ -82,6 +83,8 @@ class BaseDimQuant(object):
 
     @property
     def dimensions(self):
+        """The dimensions (dict, Dimensional) of the quantity in the format of a dict.
+        It is e.g. for '1 m': dimensions = {'L': 1}."""
         return self.__dimensions
     @dimensions.setter
     def dimensions(self, dims):

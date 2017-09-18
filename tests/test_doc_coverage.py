@@ -27,9 +27,11 @@ def inspect_selected_members(of_what):
     in an attempt to make the pytest.mark.parametrize() more readable."""
     return inspect.getmembers(of_what,
                               predicate=lambda x: (
-                                  hasattr(x, '__doc__') and \
-                                  hasattr(x, '__name__') and \
-                                  not x.__name__.startswith('_') )
+                                  hasattr(x, '__doc__') and
+                                  ( (hasattr(x, '__name__') and \
+                                       not x.__name__.startswith('_')) #i.e. is 'public'
+                                    or isinstance(x, property) # and/or is declared as 'property'
+                                  ) )
                              )
 
 # have to test helper function,
@@ -65,6 +67,8 @@ def test_doc_string_coverage(name,documentable):
     but (i) since pytest prints the input arguments of a failing test,
     having `name` available makes it simpler to trace back where the test failed;
     and (ii) the unpacked response of inspect.getmembers() *is* two values."""
+    if not isinstance(documentable, property):
+        name = documentable.__name__
     if documentable.__doc__ is None:
         raise NotImplementedError('Doc-string missing for {}!'.format(
-                                    documentable.__name__))
+                                    name))
