@@ -9,8 +9,8 @@ with open('README.md') as file_:
 
 setup(
     name='dimensionalquantity',
-    version='0.3',
-    packages=['','tests'],
+    version='0.4.4',
+    packages=['dimensionalquantity','dimensionalquantity/tests'],
     url='https://testpypi.python.org/pypi/dimensionalquantity/',
     license='LICENSE',
     description='Conveniently attach units to numbers.',
