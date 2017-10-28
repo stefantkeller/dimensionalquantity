@@ -2,7 +2,7 @@
 __pycache__
 *.cache/
 *.coverage
-dimensionalquantity/test/htmlcov/
+dimensionalquantity/tests/htmlcov/
 sandbox.ipynb
 .ipynb_checkpoints/
-dimensionalquantity/test/profilers/*.lprof
+dimensionalquantity/tests/profilers/*.lprof
